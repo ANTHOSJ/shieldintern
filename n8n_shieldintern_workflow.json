@@ -56,7 +56,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:3000/api/n8n/incoming",
+        "url": "https://shieldintern.vercel.app/api/n8n/incoming",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
