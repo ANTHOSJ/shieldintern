@@ -239,29 +239,41 @@ async function callGemini(text: string): Promise<Record<string, unknown>> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set");
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: ANALYSIS_PROMPT + text }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          temperature: 0.3,
-        },
-      }),
-    }
-  );
+  const geminiModels = ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.5-flash"];
+  let lastGeminiError: Error | null = null;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API error ${response.status}: ${errorText}`);
+  for (const model of geminiModels) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: ANALYSIS_PROMPT + text }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
+              temperature: 0.3,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error (${model}) ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!content) throw new Error(`Empty response from Gemini (${model})`);
+
+      return JSON.parse(content) as Record<string, unknown>;
+    } catch (err) {
+      lastGeminiError = err instanceof Error ? err : new Error(String(err));
+      console.warn(`Gemini model ${model} failed, trying next:`, lastGeminiError.message);
+    }
   }
 
-  const data = await response.json();
-  const content = data.candidates[0]?.content?.parts[0]?.text;
-  if (!content) throw new Error("Empty response from Gemini");
-
-  return JSON.parse(content) as Record<string, unknown>;
+  throw lastGeminiError || new Error("All Gemini models failed");
 }
