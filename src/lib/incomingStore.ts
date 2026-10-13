@@ -1,27 +1,83 @@
 import { IncomingOffer } from "./types";
+import { Redis } from "@upstash/redis";
 
-// In-memory queue of pending candidate offers awaiting user permission
-const pendingOffers: Map<string, IncomingOffer> = new Map();
+// Check for Upstash Redis or Vercel KV environment variables
+function getRedisClient(): Redis | null {
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.KV_REST_API_URL ||
+    process.env.STORAGE_REST_API_URL ||
+    process.env.STORAGE_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN ||
+    process.env.STORAGE_REST_API_TOKEN ||
+    process.env.STORAGE_TOKEN;
 
-// Set of Gmail Message IDs that have already been handled (either queued, analyzed, or dismissed)
-// This guarantees that polling Gmail every 1 minute never results in duplicate notifications
-const processedMessageIds: Set<string> = new Set();
+  if (url && token) {
+    try {
+      return new Redis({ url, token });
+    } catch (e) {
+      console.warn("Failed to initialize Upstash Redis:", e);
+    }
+  }
+
+  try {
+    return Redis.fromEnv();
+  } catch {
+    return null;
+  }
+}
+
+// In-memory fallback queue for local development
+const memoryPendingOffers: Map<string, IncomingOffer> = new Map();
+const memoryProcessedIds: Set<string> = new Set();
+
+const REDIS_PENDING_KEY = "shieldintern:pending_offers";
+const REDIS_PROCESSED_KEY = "shieldintern:processed_ids";
 
 export const incomingStore = {
-  add(offer: Omit<IncomingOffer, "id" | "timestamp">): IncomingOffer | null {
+  async add(offer: Omit<IncomingOffer, "id" | "timestamp">): Promise<IncomingOffer | null> {
     const messageId = offer.messageId;
+    const redis = getRedisClient();
 
-    // 1. If this Gmail message was already processed/dismissed/analyzed, ignore it
-    if (messageId && processedMessageIds.has(messageId)) {
-      return null;
+    if (redis) {
+      try {
+        // 1. Check if already processed
+        if (messageId) {
+          const isProcessed = await redis.sismember(REDIS_PROCESSED_KEY, messageId);
+          if (isProcessed) return null;
+        }
+
+        // 2. Check if already in pending queue
+        if (messageId) {
+          const allPending = (await redis.hvals<IncomingOffer>(REDIS_PENDING_KEY)) || [];
+          if (allPending.some((o) => o.messageId === messageId)) {
+            return null;
+          }
+        }
+
+        const id = `offer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const fullOffer: IncomingOffer = {
+          ...offer,
+          id,
+          timestamp: Date.now(),
+        };
+
+        await redis.hset(REDIS_PENDING_KEY, { [id]: fullOffer });
+        return fullOffer;
+      } catch (err) {
+        console.warn("Upstash Redis add error, falling back to in-memory:", err);
+      }
     }
 
-    // 2. If this Gmail message is already sitting in the pending queue, do not duplicate it
+    // In-memory fallback
+    if (messageId && memoryProcessedIds.has(messageId)) {
+      return null;
+    }
     if (messageId) {
-      for (const existing of pendingOffers.values()) {
-        if (existing.messageId === messageId) {
-          return null; // Already present in queue
-        }
+      for (const existing of memoryPendingOffers.values()) {
+        if (existing.messageId === messageId) return null;
       }
     }
 
@@ -31,52 +87,104 @@ export const incomingStore = {
       id,
       timestamp: Date.now(),
     };
-    pendingOffers.set(id, fullOffer);
+    memoryPendingOffers.set(id, fullOffer);
 
-    // Keep memory clean: max 20 pending offers
-    if (pendingOffers.size > 20) {
-      const oldestKey = pendingOffers.keys().next().value;
-      if (oldestKey) pendingOffers.delete(oldestKey);
+    if (memoryPendingOffers.size > 25) {
+      const oldestKey = memoryPendingOffers.keys().next().value;
+      if (oldestKey) memoryPendingOffers.delete(oldestKey);
     }
 
     return fullOffer;
   },
 
-  getAll(): IncomingOffer[] {
-    return Array.from(pendingOffers.values()).sort((a, b) => b.timestamp - a.timestamp);
+  async getAll(): Promise<IncomingOffer[]> {
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const offers = (await redis.hvals<IncomingOffer>(REDIS_PENDING_KEY)) || [];
+        return offers.sort((a, b) => b.timestamp - a.timestamp);
+      } catch (err) {
+        console.warn("Upstash Redis getAll error, falling back to in-memory:", err);
+      }
+    }
+
+    return Array.from(memoryPendingOffers.values()).sort((a, b) => b.timestamp - a.timestamp);
   },
 
-  get(id: string): IncomingOffer | undefined {
-    return pendingOffers.get(id);
+  async get(id: string): Promise<IncomingOffer | undefined> {
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const offer = await redis.hget<IncomingOffer>(REDIS_PENDING_KEY, id);
+        return offer || undefined;
+      } catch (err) {
+        console.warn("Upstash Redis get error, falling back to in-memory:", err);
+      }
+    }
+
+    return memoryPendingOffers.get(id);
   },
 
-  remove(id: string): boolean {
-    const existing = pendingOffers.get(id);
+  async remove(id: string): Promise<boolean> {
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const existing = await redis.hget<IncomingOffer>(REDIS_PENDING_KEY, id);
+        if (existing?.messageId) {
+          await redis.sadd(REDIS_PROCESSED_KEY, existing.messageId);
+        }
+        const deletedCount = await redis.hdel(REDIS_PENDING_KEY, id);
+        return deletedCount > 0;
+      } catch (err) {
+        console.warn("Upstash Redis remove error, falling back to in-memory:", err);
+      }
+    }
+
+    const existing = memoryPendingOffers.get(id);
     if (existing?.messageId) {
-      // Remember this messageId permanently so future polls ignore it
-      processedMessageIds.add(existing.messageId);
-
-      // Keep processed cache bounded (max 500 IDs)
-      if (processedMessageIds.size > 500) {
-        const oldest = processedMessageIds.values().next().value;
-        if (oldest) processedMessageIds.delete(oldest);
+      memoryProcessedIds.add(existing.messageId);
+      if (memoryProcessedIds.size > 500) {
+        const oldest = memoryProcessedIds.values().next().value;
+        if (oldest) memoryProcessedIds.delete(oldest);
       }
     }
-    return pendingOffers.delete(id);
+    return memoryPendingOffers.delete(id);
   },
 
-  clear(): void {
-    // Mark all currently pending offers as processed before clearing
-    for (const offer of pendingOffers.values()) {
-      if (offer.messageId) {
-        processedMessageIds.add(offer.messageId);
+  async clear(): Promise<void> {
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const allOffers = (await redis.hvals<IncomingOffer>(REDIS_PENDING_KEY)) || [];
+        const messageIds = allOffers.map((o) => o.messageId).filter(Boolean) as string[];
+        if (messageIds.length > 0) {
+          await redis.sadd(REDIS_PROCESSED_KEY, ...messageIds);
+        }
+        await redis.del(REDIS_PENDING_KEY);
+        return;
+      } catch (err) {
+        console.warn("Upstash Redis clear error, falling back to in-memory:", err);
       }
     }
-    pendingOffers.clear();
+
+    for (const offer of memoryPendingOffers.values()) {
+      if (offer.messageId) memoryProcessedIds.add(offer.messageId);
+    }
+    memoryPendingOffers.clear();
   },
 
-  reset(): void {
-    pendingOffers.clear();
-    processedMessageIds.clear();
+  async reset(): Promise<void> {
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        await redis.del(REDIS_PENDING_KEY, REDIS_PROCESSED_KEY);
+        return;
+      } catch (err) {
+        console.warn("Upstash Redis reset error, falling back to in-memory:", err);
+      }
+    }
+
+    memoryPendingOffers.clear();
+    memoryProcessedIds.clear();
   },
 };

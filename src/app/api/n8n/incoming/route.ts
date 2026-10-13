@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newOffer = incomingStore.add({
+    const newOffer = await incomingStore.add({
       messageId: messageId ? String(messageId) : undefined,
       sender: String(sender),
       subject: String(subject),
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
 // GET: Fetch all offers awaiting user permission
 export async function GET() {
-  const offers = incomingStore.getAll();
+  const offers = await incomingStore.getAll();
   return NextResponse.json({ offers });
 }
 
@@ -107,16 +107,16 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (id === "reset") {
-      incomingStore.reset();
+      await incomingStore.reset();
       return NextResponse.json({ success: true, cleared: "reset" });
     }
 
     if (id === "all") {
-      incomingStore.clear();
+      await incomingStore.clear();
       return NextResponse.json({ success: true, cleared: "all" });
     }
 
-    const removed = incomingStore.remove(id);
+    const removed = await incomingStore.remove(id);
     return NextResponse.json({ success: removed });
   } catch (error) {
     console.error("Delete Offer Error:", error);
