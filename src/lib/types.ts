@@ -42,3 +42,15 @@ export interface MockOffer {
   };
   complaintDraft?: string;
 }
+
+export interface IncomingOffer {
+  id: string;
+  messageId?: string;
+  sender: string;
+  subject: string;
+  snippet: string;
+  body: string;
+  receivedAt: string;
+  timestamp: number;
+}
+

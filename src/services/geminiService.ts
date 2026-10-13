@@ -23,7 +23,10 @@ Analyze the following offer text and return a JSON response with this EXACT stru
 
 IMPORTANT RULES:
 - The "highlights" array must contain EXACT phrases copied from the original text. Do not paraphrase.
-- Include 3-8 highlights covering both red flags and any trust signals.
+- In "highlights", assign severity: "danger" to any phrase demanding money, security deposits, registration fees, UPI IDs, urgent payment deadlines, or direct selection without any interview.
+- In "highlights", assign severity: "suspicious" to unusual salaries, vague details, or unusual work conditions.
+- In "highlights", assign severity: "safe" to legitimate verifiable company details, standard HR processes, or transparent terms.
+- Include 3-8 highlights covering red flags and any trust signals.
 - Include 3-6 fraud indicators covering: payment requests, urgency/pressure, vague company info, unrealistic salary, suspicious contact info, missing interview process.
 - Include 3-5 practical verification steps a college student can take.
 - riskLevel must be "safe" if riskScore <= 30, "suspicious" if 31-60, "high-risk" if > 60.
@@ -61,7 +64,7 @@ export async function analyzeOffer(text: string): Promise<AnalysisResult> {
     try {
       console.log(`Trying ${provider.name}...`);
       const raw = await provider.fn();
-      const result = sanitizeResult(raw);
+      const result = sanitizeResult(raw, text);
 
       console.log(`${provider.name} succeeded! Risk: ${result.riskScore}`);
       return result;
@@ -75,7 +78,7 @@ export async function analyzeOffer(text: string): Promise<AnalysisResult> {
 }
 
 // ── Sanitize AI Response (NEVER crash) ──────────────────────────
-function sanitizeResult(raw: Record<string, unknown>): AnalysisResult {
+function sanitizeResult(raw: Record<string, unknown>, originalText?: string): AnalysisResult {
   const riskScore = typeof raw.riskScore === "number" ? Math.min(100, Math.max(0, raw.riskScore)) : 50;
 
   let riskLevel: "safe" | "suspicious" | "high-risk";
@@ -83,16 +86,61 @@ function sanitizeResult(raw: Record<string, unknown>): AnalysisResult {
   else if (riskScore <= 60) riskLevel = "suspicious";
   else riskLevel = "high-risk";
 
+  const rawHighlights = Array.isArray(raw.highlights) ? raw.highlights : [];
+  const parsedHighlights = rawHighlights
+    .map((h: Record<string, unknown>) => {
+      const text = String(h.text || "").trim();
+      const rawSev = String(h.severity || "").toLowerCase().trim();
+      let severity: "safe" | "suspicious" | "danger" = "suspicious";
+      if (rawSev === "danger" || rawSev === "high" || rawSev === "critical" || rawSev === "red") {
+        severity = "danger";
+      } else if (rawSev === "safe" || rawSev === "low" || rawSev === "green") {
+        severity = "safe";
+      } else {
+        severity = "suspicious";
+      }
+      return { text, severity };
+    })
+    .filter((h) => h.text.length > 0);
+
+  // If high risk or suspicious, ensure critical scam triggers in originalText are highlighted as danger
+  if (originalText && riskScore >= 50) {
+    const criticalPatterns = [
+      /(?:refundable\s+)?(?:workspace\s+|security\s+|laptop\s+)?(?:security\s+deposit|workspace\s+deposit|caution\s+deposit|registration\s+fee|processing\s+fee|training\s+fee)[^\n.]*/gi,
+      /UPI\s*ID[^\n.]*/gi,
+      /[a-zA-Z0-9.\-_]+@(?:ok[a-zA-Z]+|paytm|ybl|axl|ibl|upi)/gi,
+      /(?:directly\s+)?approved\s+without\s+(?:any\s+)?technical\s+interview[^\n.]*/gi,
+      /(?:payment\s+screenshot\s+and\s+reference\s+ID)[^\n.]*/gi,
+    ];
+
+    for (const pat of criticalPatterns) {
+      let match: RegExpExecArray | null;
+      while ((match = pat.exec(originalText)) !== null) {
+        const matchedPhrase = match[0].trim();
+        if (matchedPhrase.length > 4) {
+          const existing = parsedHighlights.find(
+            (h) =>
+              h.text.toLowerCase().includes(matchedPhrase.toLowerCase()) ||
+              matchedPhrase.toLowerCase().includes(h.text.toLowerCase())
+          );
+          if (existing) {
+            existing.severity = "danger"; // elevate to danger
+          } else {
+            parsedHighlights.push({
+              text: matchedPhrase,
+              severity: "danger",
+            });
+          }
+        }
+      }
+    }
+  }
+
   const result: AnalysisResult = {
     riskScore,
     riskLevel,
     summary: typeof raw.summary === "string" ? raw.summary : "Analysis complete. Review the details below.",
-    highlights: Array.isArray(raw.highlights)
-      ? raw.highlights.map((h: Record<string, unknown>) => ({
-          text: String(h.text || ""),
-          severity: (["safe", "suspicious", "danger"].includes(String(h.severity)) ? h.severity : "suspicious") as "safe" | "suspicious" | "danger",
-        })).filter((h) => h.text.length > 0)
-      : [],
+    highlights: parsedHighlights,
     indicators: Array.isArray(raw.indicators)
       ? raw.indicators.map((i: Record<string, unknown>) => ({
           icon: String(i.icon || "⚠️"),
@@ -133,39 +181,57 @@ async function callGroq(text: string): Promise<Record<string, unknown>> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("GROQ_API_KEY not set");
 
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: "You are an expert cybersecurity analyst. Always respond with valid JSON only.",
-        },
-        {
-          role: "user",
-          content: ANALYSIS_PROMPT + text,
-        },
-      ],
-      temperature: 0.3,
-      response_format: { type: "json_object" },
-    }),
-  });
+  const modelsToTry = [
+    process.env.GROQ_MODEL,
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.8-27b",
+  ].filter(Boolean) as string[];
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Groq API error ${response.status}: ${errorText}`);
+  let lastGroqError: Error | null = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert cybersecurity analyst. Always respond with valid JSON only.",
+            },
+            {
+              role: "user",
+              content: ANALYSIS_PROMPT + text,
+            },
+          ],
+          temperature: 0.3,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Groq API error (${model}) ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+      if (!content) throw new Error(`Empty response from Groq (${model})`);
+
+      return JSON.parse(content) as Record<string, unknown>;
+    } catch (err) {
+      lastGroqError = err instanceof Error ? err : new Error(String(err));
+      console.warn(`Groq model ${model} failed, trying next fallback:`, lastGroqError.message);
+    }
   }
 
-  const data = await response.json();
-  const content = data.choices[0]?.message?.content;
-  if (!content) throw new Error("Empty response from Groq");
-
-  return JSON.parse(content) as Record<string, unknown>;
+  throw lastGroqError || new Error("All Groq models failed");
 }
 
 // ── Gemini (Fallback) ───────────────────────────────────────────

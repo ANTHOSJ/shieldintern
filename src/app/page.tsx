@@ -3,6 +3,7 @@
 import { Shield } from "lucide-react";
 import { useOfferStore } from "@/store/offerStore";
 import MockEmailGallery from "@/components/forms/MockEmailGallery";
+import IncomingOfferBanner from "@/components/forms/IncomingOfferBanner";
 import OfferInput from "@/components/forms/OfferInput";
 import ResultsDashboard from "@/components/views/ResultsDashboard";
 
@@ -32,6 +33,9 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        {/* Real-time n8n Incoming Offer Permission Banner */}
+        <IncomingOfferBanner />
+
         {/* Mock Email Gallery */}
         <MockEmailGallery />
 
@@ -48,13 +52,6 @@ export default function Home() {
         {/* Results Dashboard */}
         {result && <ResultsDashboard result={result} originalText={inputText} />}
       </div>
-
-      {/* Footer */}
-      <footer className="border-t border-border mt-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-muted">
-          Built with AI + Cyber Defense — Hackathon 2026
-        </div>
-      </footer>
     </main>
   );
 }

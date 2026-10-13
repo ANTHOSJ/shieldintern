@@ -1,0 +1,119 @@
+{
+  "name": "ShieldIntern - Full Body Gmail Watcher",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Every 1 Minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "limit": 5,
+        "simple": false,
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "id": "2",
+      "name": "List Unread Emails",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nconst primaryKeywords = [\n  'intern',\n  'internship',\n  'job offer',\n  'offer letter',\n  'shortlisted',\n  'stipend',\n  'trainee',\n  'selected for'\n];\n\nfor (const item of items) {\n  const data = item.json;\n\n  // 1. Extract Subject\n  let subject = data.subject || data.Subject || data.title || '';\n\n  // 2. Extract Sender\n  let rawFrom = data.from || data.From || data.sender || '';\n  let sender = 'Recruiter (via Gmail)';\n  if (typeof rawFrom === 'object' && rawFrom !== null) {\n    if (rawFrom.text) {\n      sender = rawFrom.text.replace(/^[\"']|[\"']$/g, '');\n    } else if (rawFrom.value && rawFrom.value[0]) {\n      const v = rawFrom.value[0];\n      sender = v.name ? `${v.name} <${v.address}>` : v.address;\n    } else if (rawFrom.address) {\n      sender = rawFrom.address;\n    } \n  } else if (rawFrom) {\n    sender = String(rawFrom).replace(/^[\"']|[\"']$/g, '');\n  }\n\n  // 3. Extract Full Email Body\n  let body = data.text || data.textPlain || data.body;\n  if (!body && data.html) {\n    body = data.html\n      .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n      .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n      .replace(/<[^>]+>/g, ' ')\n      .replace(/&nbsp;/gi, ' ')\n      .replace(/&amp;/gi, '&')\n      .replace(/&lt;/gi, '<')\n      .replace(/&gt;/gi, '>')\n      .replace(/\\s+/g, ' ')\n      .trim();\n  }\n  if (!body) {\n    body = data.snippet || subject;\n  }\n\n  // 4. Extract Snippet for preview banner\n  let snippet = data.snippet || (body ? body.replace(/\\s+/g, ' ').slice(0, 160) : '');\n\n  // 5. Subject fallback if missing\n  if (!subject) {\n    const subMatch = body.match(/Subject:\\s*([^\\r\\n]+)/i);\n    subject = subMatch ? subMatch[1].trim() : 'Internship Offer';\n  }\n\n  // 6. Filter keywords\n  const fullText = (subject + ' ' + body).toLowerCase();\n  const hasPrimaryKeyword = primaryKeywords.some(k => fullText.includes(k));\n  const isNewsletter = (fullText.includes('unsubscribe') && !fullText.includes('intern')) ||\n                       subject.toLowerCase().startsWith('ppt tips:') ||\n                       subject.toLowerCase().includes('newsletter');\n\n  if (hasPrimaryKeyword && !isNewsletter) {\n    results.push({\n      json: {\n        messageId: data.id || data.messageId || '',\n        isCandidateOffer: true,\n        sender: sender,\n        subject: subject,\n        snippet: snippet,\n        body: body,\n        receivedAt: data.date || data.Date || new Date().toISOString()\n      }\n    });\n  }\n}\n\nreturn results;"
+      },
+      "id": "3",
+      "name": "Offer Screener",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/n8n/incoming",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "4",
+      "name": "Send to ShieldIntern",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Every 1 Minute": {
+      "main": [
+        [
+          {
+            "node": "List Unread Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Unread Emails": {
+      "main": [
+        [
+          {
+            "node": "Offer Screener",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Offer Screener": {
+      "main": [
+        [
+          {
+            "node": "Send to ShieldIntern",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

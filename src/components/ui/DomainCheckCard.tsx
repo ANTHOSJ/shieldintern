@@ -71,22 +71,16 @@ const verdictConfig = {
 
 export default function DomainCheckCard({ originalText }: DomainCheckCardProps) {
   const [result, setResult] = useState<DomainCheckResult | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [noEmail, setNoEmail] = useState(false);
+
+  const email = extractEmail(originalText);
 
   useEffect(() => {
-    const email = extractEmail(originalText);
-    if (!email) {
-      setNoEmail(true);
-      return;
-    }
+    if (!email) return;
 
+    let ignore = false;
     const domain = extractDomainFromEmail(email);
     const company = extractCompanyName(originalText);
-
-    setLoading(true);
-    setError(null);
 
     fetch("/api/domain-check", {
       method: "POST",
@@ -105,18 +99,19 @@ export default function DomainCheckCard({ originalText }: DomainCheckCardProps) 
         return res.json();
       })
       .then((data: DomainCheckResult) => {
-        setResult(data);
+        if (!ignore) setResult(data);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : "Domain check failed");
-      })
-      .finally(() => {
-        setLoading(false);
+        if (!ignore) setError(err instanceof Error ? err.message : "Domain check failed");
       });
-  }, [originalText]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [originalText, email]);
 
   // No email found in the text — show a warning (absence of email IS a red flag)
-  if (noEmail) {
+  if (!email) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 space-y-3">
         <div className="flex items-center justify-between border-b border-red-200 pb-3 mb-3">
@@ -137,8 +132,22 @@ export default function DomainCheckCard({ originalText }: DomainCheckCardProps) 
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+        <div className="flex items-center gap-2">
+          <span className="text-amber-600 font-bold">!</span>
+          <p className="text-sm text-foreground">
+            Domain check unavailable: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Loading state
-  if (loading) {
+  if (!result) {
     return (
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-center gap-3">
