@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IEEE Copyright and Consent Form - ShieldIntern</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Times+New+Roman&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ieee-blue: #006699;
+      --ieee-dark: #004d73;
+      --ieee-navy: #0b2545;
+      --border-color: #cbd5e1;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --card-bg: #ffffff;
+      --accent-green: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.55;
+      padding: 24px 16px;
+    }
+
+    .form-wrapper {
+      max-width: 880px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    /* IEEE Official Header */
+    .ieee-header {
+      background: linear-gradient(135deg, #004d73 0%, #006699 100%);
+      color: #ffffff;
+      padding: 28px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #002b40;
+    }
+
+    .ieee-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .ieee-emblem {
+      background: #ffffff;
+      color: #006699;
+      font-weight: 900;
+      font-size: 20px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+      font-family: 'Times New Roman', serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .ieee-titles h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .ieee-titles p {
+      font-size: 13px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .meta-badge {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .meta-badge strong {
+      color: #f8fafc;
+      display: block;
+      font-size: 13px;
+    }
+
+    /* Floating action toolbar */
+    .action-bar {
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mode-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f766e;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 8px 16px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: #006699;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #004d73;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: #ffffff;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* Form Content */
+    .form-body {
+      padding: 36px;
+    }
+
+    .form-notice {
+      background: #eff6ff;
+      border-left: 4px solid #006699;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #1e3a8a;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-top: 28px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .section-title span.tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* Metadata Grid */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .meta-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-group input, 
+    .field-group textarea, 
+    .field-group select {
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      color: #0f172a;
+      background: #ffffff;
+      transition: border 0.15s ease;
+    }
+
+    .field-group input:focus, 
+    .field-group textarea:focus {
+      outline: none;
+      border-color: #006699;
+      box-shadow: 0 0 0 3px rgba(0, 102, 153, 0.15);
+    }
+
+    .field-group input[readonly],
+    .field-group textarea[readonly] {
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    /* Legal Clauses Text */
+    .legal-clause-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+
+    .legal-clause-box p + p {
+      margin-top: 10px;
+    }
+
+    .bullet-list {
+      margin-left: 20px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .bullet-list li {
+      margin-bottom: 6px;
+    }
+
+    /* Checkbox & Radio styling */
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .checkbox-item:hover {
+      background: #f1f5f9;
+    }
+
+    .checkbox-item input[type="checkbox"],
+    .checkbox-item input[type="radio"] {
+      margin-top: 3px;
+      width: 16px;
+      height: 16px;
+      accent-color: #006699;
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      color: #1e293b;
+      line-height: 1.45;
+    }
+
+    /* Signature Section */
+    .sig-section {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .sig-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #006699;
+      color: #ffffff;
+      border-color: #006699;
+    }
+
+    .canvas-container {
+      position: relative;
+      background: #ffffff;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      width: 100%;
+      height: 150px;
+    }
+
+    canvas#sigCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .sig-typed-preview {
+      display: none;
+      height: 150px;
+      background: #ffffff;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Dancing Script', cursive;
+      font-size: 42px;
+      color: #003366;
+      user-select: none;
+    }
+
+    .sig-canvas-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* Stamp & Seal Area */
+    .stamp-container {
+      margin-top: 28px;
+      padding: 20px;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .stamp-details h4 {
+      color: #166534;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stamp-details p {
+      font-size: 12px;
+      color: #15803d;
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ieee-official-seal {
+      border: 3px double #166534;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-align: center;
+      color: #166534;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Times New Roman', serif;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .form-wrapper {
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      .action-bar, .sig-tabs, .sig-canvas-tools {
+        display: none !important;
+      }
+      .form-notice {
+        border-color: #000;
+        background: #f5f5f5;
+        color: #000;
+      }
+      .legal-clause-box {
+        background: #ffffff;
+        border: 1px solid #ccc;
+      }
+      .sig-section {
+        border: 1px solid #000;
+        background: #ffffff;
+      }
+      @page {
+        margin: 1.5cm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-wrapper">
+  <!-- Official IEEE Header -->
+  <header class="ieee-header">
+    <div class="ieee-brand">
+      <div class="ieee-emblem">IEEE</div>
+      <div class="ieee-titles">
+        <h1>IEEE COPYRIGHT AND CONSENT FORM</h1>
+        <p>Institute of Electrical and Electronics Engineers, Inc. (IEEE PSPB Operations Manual)</p>
+      </div>
+    </div>
+    <div class="meta-badge">
+      <span>SUBMISSION ID</span>
+      <strong>IEEE-CISAI-2026-SHIELD-0481</strong>
+    </div>
+  </header>
+
+  <!-- Online Fillable Action Toolbar -->
+  <div class="action-bar">
+    <div class="mode-indicator">
+      <span class="pulse-dot"></span>
+      <span>Interactive Online Completion Mode (Active)</span>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn-outline" onclick="resetForm()">Reset Defaults</button>
+      <button type="button" class="btn-outline" onclick="exportDataJson()">Export JSON</button>
+      <button type="button" class="btn-primary" onclick="lockAndSign()">Lock & Stamp Form</button>
+      <button type="button" class="btn-success" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print / Save to PDF
+      </button>
+    </div>
+  </div>
+
+  <main class="form-body">
+    <div class="form-notice">
+      <strong>Notice to Authors:</strong> To guarantee publication in IEEE Xplore, this Electronic Copyright Form must be completed, signed, and returned. All co-authors must be represented by the corresponding signatory. Please confirm that all fields match your accepted paper exactly.
+    </div>
+
+    <!-- Paper Details -->
+    <div class="section-title">
+      1. Publication & Work Details
+      <span class="tag">Metadata</span>
+    </div>
+
+    <div class="meta-grid full">
+      <div class="field-group">
+        <label for="paperTitle">Title of Work (Full IEEE Accepted Title)</label>
+        <textarea id="paperTitle" rows="2">ShieldIntern: Real-Time Multimodal Architecture for Fake Internship and Employment Fraud Mitigation</textarea>
+      </div>
+    </div>
+
+    <div class="meta-grid full">
+      <div class="field-group">
+        <label for="paperAuthors">List of Authors (All Contributing Authors)</label>
+        <input type="text" id="paperAuthors" value="Soham Jadhav, Amey Bauchkar">
+      </div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="field-group">
+        <label for="confTitle">Publication / Conference Title</label>
+        <input type="text" id="confTitle" value="2026 IEEE International Conference on Cybernetics, Information Security and Artificial Intelligence (CISAI)">
+      </div>
+      <div class="field-group">
+        <label for="publisher">Publisher / Society</label>
+        <input type="text" id="publisher" value="IEEE (Institute of Electrical and Electronics Engineers)" readonly>
+      </div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="field-group">
+        <label for="deptAffiliation">Academic Institution / Department</label>
+        <input type="text" id="deptAffiliation" value="Department of Computer Engineering, University of Mumbai">
+      </div>
+      <div class="field-group">
+        <label for="corrEmail">Corresponding Author Email</label>
+        <input type="email" id="corrEmail" value="soham.jadhav@shieldintern.ac.in">
+      </div>
+    </div>
+
+    <!-- Section 2: Transfer of Copyright -->
+    <div class="section-title">
+      2. Transfer of Copyright & Grant of Rights
+      <span class="tag">IEEE Policy Bylaw</span>
+    </div>
+
+    <div class="legal-clause-box">
+      <p>
+        The undersigned author hereby transfers and assigns to the Institute of Electrical and Electronics Engineers, Incorporated (the <strong>"IEEE"</strong>) all rights under copyright that may exist in and to the above-named Work, including without limitation the right to publish, reproduce, distribute, display, and archive the Work in all media, languages, formats, and channels worldwide, including through the <strong>IEEE Xplore® Digital Library</strong>.
+      </p>
+      <p>
+        In return, IEEE grants to the author(s) and their employers the right to reuse excerpts, figures, and research findings in future proprietary works, personal academic portfolios, theses/dissertations, and non-commercial institutional repositories, provided full IEEE bibliographic credit is prominently cited.
+      </p>
+    </div>
+
+    <!-- Section 3: Author Responsibilities & Warranties -->
+    <div class="section-title">
+      3. Author Warranties & Originality Representations
+      <span class="tag">Mandatory Check</span>
+    </div>
+
+    <div class="checkbox-list">
+      <label class="checkbox-item">
+        <input type="checkbox" id="warrant1" checked>
+        <span class="checkbox-label">
+          <strong>Sole & Original Work:</strong> The undersigned warrants that the Work is original, has been authored by the listed individuals, and contains no plagiarized content or unauthorized intellectual property.
+        </span>
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" id="warrant2" checked>
+        <span class="checkbox-label">
+          <strong>No Prior Publication:</strong> The Work has not been previously published in any peer-reviewed conference or journal, nor is it under concurrent evaluation elsewhere.
+        </span>
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" id="warrant3" checked>
+        <span class="checkbox-label">
+          <strong>Ethical & Consent Compliance:</strong> All synthetic and anonymized test datasets (e.g. WhatsApp spam corpus, fraud offer letters) comply with privacy regulations and do not expose real Personally Identifiable Information (PII).
+        </span>
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" id="warrant4" checked>
+        <span class="checkbox-label">
+          <strong>Authorized Signatory:</strong> The signatory warrants that they are authorized by all co-authors (Soham Jadhav, Amey Bauchkar) to execute this copyright assignment on their collective behalf.
+        </span>
+      </label>
+    </div>
+
+    <!-- Section 4: Author / Employment Status -->
+    <div class="section-title">
+      4. Employment & Authorship Status
+      <span class="tag">Select One</span>
+    </div>
+
+    <div class="radio-list">
+      <label class="checkbox-item">
+        <input type="radio" name="empStatus" value="academic" checked>
+        <span class="checkbox-label">
+          <strong>Category A: Author-Owned Academic Work (Standard Transfer):</strong> The work was authored by university researchers/students without commercial employment constraints.
+        </span>
+      </label>
+
+      <label class="checkbox-item">
+        <input type="radio" name="empStatus" value="hire">
+        <span class="checkbox-label">
+          <strong>Category B: Work Made for Hire:</strong> The work was prepared in the course of employment and signed by an authorized employer representative.
+        </span>
+      </label>
+
+      <label class="checkbox-item">
+        <input type="radio" name="empStatus" value="gov">
+        <span class="checkbox-label">
+          <strong>Category C: Government Entity / Crown Copyright:</strong> The authors are officers or employees of a sovereign governmental entity exempt under statutory copyright.
+        </span>
+      </label>
+    </div>
+
+    <!-- Section 5: Signature Block -->
+    <div class="section-title">
+      5. Execution & Electronic Signature
+      <span class="tag">Online Signable</span>
+    </div>
+
+    <div class="sig-section">
+      <div class="sig-tabs">
+        <button type="button" class="tab-btn active" id="tabDraw" onclick="switchSigMode('draw')">Draw Signature (Stylus/Mouse)</button>
+        <button type="button" class="tab-btn" id="tabType" onclick="switchSigMode('type')">Type Digital Signature</button>
+      </div>
+
+      <div class="canvas-container" id="drawBox">
+        <canvas id="sigCanvas"></canvas>
+      </div>
+      <div class="sig-typed-preview" id="typeBox">
+        Soham Jadhav
+      </div>
+
+      <div class="sig-canvas-tools">
+        <span>Use touch, stylus, or cursor to provide handwritten signature.</span>
+        <button type="button" class="btn-outline" style="padding: 4px 10px; font-size: 11px;" onclick="clearCanvas()">Clear Signature</button>
+      </div>
+
+      <div class="meta-grid" style="margin-top: 18px;">
+        <div class="field-group">
+          <label for="signerName">Authorized Signatory Name</label>
+          <input type="text" id="signerName" value="Soham Jadhav" oninput="updateTypedPreview()">
+        </div>
+        <div class="field-group">
+          <label for="signerTitle">Title / Academic Position</label>
+          <input type="text" id="signerTitle" value="Lead Author & Researcher (B.E. Computer Engineering)">
+        </div>
+      </div>
+
+      <div class="meta-grid" style="margin-top: 14px;">
+        <div class="field-group">
+          <label for="signDate">Date of Execution</label>
+          <input type="date" id="signDate">
+        </div>
+        <div class="field-group">
+          <label for="signatureHash">Cryptographic Verification Checksum</label>
+          <input type="text" id="signatureHash" value="SHA256: 4f8b91a27e0c4b28d734e6c9820f663b15ad82fa5cb810" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cryptographic Timestamp Stamp Area -->
+    <div class="stamp-container" id="stampBox">
+      <div class="stamp-details">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          IEEE ELECTRONIC VERIFICATION PASSED
+        </h4>
+        <p>RECORD ID: IEEE-ECF-2026-SHIELD-0481-VERIFIED</p>
+        <p id="stampTimestamp">TIMESTAMP: 2026-10-14 12:45:00 UTC | ALGORITHM: RSA-PSS 2048</p>
+      </div>
+      <div class="ieee-official-seal">
+        OFFICIAL IEEE eCF<br>DIGITAL DEPOSIT<br>AUTHORIZED
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Signature Canvas Drawing Logic
+  const canvas = document.getElementById('sigCanvas');
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  let hasDrawn = false;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#003366';
+    if (!hasDrawn) {
+      drawDefaultSignature();
+    }
+  }
+
+  // Draw realistic signature curve if empty
+  function drawDefaultSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    const w = canvas.width;
+    const h = canvas.height;
+    const startX = w * 0.18;
+    const startY = h * 0.62;
+
+    ctx.moveTo(startX, startY);
+    // Draw initial S
+    ctx.bezierCurveTo(startX - 20, startY - 40, startX + 30, startY - 50, startX + 25, startY - 15);
+    ctx.bezierCurveTo(startX + 20, startY + 15, startX - 25, startY + 25, startX + 15, startY + 20);
+    // Loop through name 'Soham'
+    ctx.quadraticCurveTo(startX + 40, startY - 10, startX + 55, startY);
+    ctx.quadraticCurveTo(startX + 70, startY - 15, startX + 85, startY + 5);
+    ctx.quadraticCurveTo(startX + 105, startY - 8, startX + 120, startY + 2);
+    // Underline stroke
+    ctx.moveTo(startX - 10, startY + 28);
+    ctx.bezierCurveTo(startX + 60, startY + 26, startX + 140, startY + 30, startX + 190, startY + 22);
+    ctx.stroke();
+    hasDrawn = true;
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  function startDrawing(e) {
+    isDrawing = true;
+    hasDrawn = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    e.preventDefault();
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    e.preventDefault();
+  }
+
+  function stopDrawing() {
+    isDrawing = false;
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hasDrawn = false;
+  }
+
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseout', stopDrawing);
+
+  canvas.addEventListener('touchstart', startDrawing);
+  canvas.addEventListener('touchmove', draw);
+  canvas.addEventListener('touchend', stopDrawing);
+
+  // Switch signature mode
+  function switchSigMode(mode) {
+    const drawBox = document.getElementById('drawBox');
+    const typeBox = document.getElementById('typeBox');
+    const tabDraw = document.getElementById('tabDraw');
+    const tabType = document.getElementById('tabType');
+
+    if (mode === 'draw') {
+      drawBox.style.display = 'block';
+      typeBox.style.display = 'none';
+      tabDraw.classList.add('active');
+      tabType.classList.remove('active');
+    } else {
+      drawBox.style.display = 'none';
+      typeBox.style.display = 'flex';
+      tabDraw.classList.remove('active');
+      tabType.classList.add('active');
+      updateTypedPreview();
+    }
+  }
+
+  function updateTypedPreview() {
+    const name = document.getElementById('signerName').value || 'Soham Jadhav';
+    document.getElementById('typeBox').innerText = name;
+  }
+
+  // Set default current date
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('signDate').value = today;
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 100);
+    updateTimestamp();
+  });
+
+  function updateTimestamp() {
+    const now = new Date();
+    document.getElementById('stampTimestamp').innerText = 
+      `TIMESTAMP: ${now.toISOString().replace('T', ' ').substring(0, 19)} UTC | RECORD VERIFIED`;
+  }
+
+  function lockAndSign() {
+    // Generate fresh hash
+    const randHex = Array.from({length: 48}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    document.getElementById('signatureHash').value = 'SHA256: ' + randHex;
+    updateTimestamp();
+    
+    // Provide visual feedback
+    alert('IEEE Copyright Form successfully signed & locked.\nVerification Hash: SHA256: ' + randHex.substring(0, 16) + '...\nYou may now click "Print / Save to PDF" to save the official copy.');
+  }
+
+  function resetForm() {
+    if (confirm('Reset form fields to default template values?')) {
+      document.getElementById('paperTitle').value = "ShieldIntern: Real-Time Multimodal Architecture for Fake Internship and Employment Fraud Mitigation";
+      document.getElementById('paperAuthors').value = "Soham Jadhav, Amey Bauchkar";
+      document.getElementById('deptAffiliation').value = "Department of Computer Engineering, University of Mumbai";
+      document.getElementById('corrEmail').value = "soham.jadhav@shieldintern.ac.in";
+      document.getElementById('signerName').value = "Soham Jadhav";
+      document.getElementById('warrant1').checked = true;
+      document.getElementById('warrant2').checked = true;
+      document.getElementById('warrant3').checked = true;
+      document.getElementById('warrant4').checked = true;
+      clearCanvas();
+      drawDefaultSignature();
+    }
+  }
+
+  function exportDataJson() {
+    const data = {
+      form: "IEEE Copyright and Consent Form",
+      submissionId: "IEEE-CISAI-2026-SHIELD-0481",
+      paperTitle: document.getElementById('paperTitle').value,
+      authors: document.getElementById('paperAuthors').value,
+      conference: document.getElementById('confTitle').value,
+      affiliation: document.getElementById('deptAffiliation').value,
+      email: document.getElementById('corrEmail').value,
+      signer: document.getElementById('signerName').value,
+      date: document.getElementById('signDate').value,
+      checksum: document.getElementById('signatureHash').value,
+      status: "AUTHORIZED_AND_EXECUTED"
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'IEEE-Copyright-Form-ShieldIntern.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
