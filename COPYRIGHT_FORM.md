@@ -12,8 +12,11 @@
   *ShieldIntern: Real-Time Multimodal Architecture for Fake Internship and Employment Fraud Mitigation*
 - **Complete List of Authors:**  
   1. **Soham Jadhav** (Department of Computer Engineering, University of Mumbai)  
-  2. **Amey Bauchkar** (Department of Information Technology, University of Mumbai)  
+  2. **Harsh Sawant** (Department of Computer Engineering, University of Mumbai)  
+  3. **Aryan Talpade** (Department of Computer Engineering, University of Mumbai)  
+  4. **Arham Ansari** (Department of Computer Engineering, University of Mumbai)  
 - **Corresponding Author:** Soham Jadhav (`soham.jadhav@shieldintern.ac.in`)  
+- **Live Deployment:** `https://shieldintern.vercel.app`  
 - **Publisher / Society:** Institute of Electrical and Electronics Engineers (IEEE), IEEE Computer Society  
 
 ---
@@ -33,7 +36,7 @@ By signing this agreement, the author(s) certify and warrant that:
 - [x] **No Concurrent Submission:** The Work has not been previously published elsewhere, nor is it under concurrent peer review or publication consideration with any other conference, journal, or book.
 - [x] **Non-Infringement:** The Work contains no defamatory statements and does not infringe upon any copyright, trademark, patent, trade secret, or personal privacy rights of any third party.
 - [x] **Ethics & Data Privacy:** All experimental datasets, phishing samples, domain records, and heuristic models have been curated ethically with complete redaction and anonymization of real Personally Identifiable Information (PII) in compliance with DPDP Act 2023 and GDPR guidelines.
-- [x] **Authority to Sign:** The undersigned represents that they are authorized by all co-authors to execute this transfer of copyright on behalf of all contributing authors.
+- [x] **Authority to Sign:** The undersigned represents that they are authorized by all co-authors (Soham Jadhav, Harsh Sawant, Aryan Talpade, Arham Ansari) to execute this transfer of copyright on behalf of all contributing authors.
 
 ---
 

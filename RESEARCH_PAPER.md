@@ -1,12 +1,9 @@
 # ShieldIntern: An Event-Driven Forensic Pipeline for Real-Time Recruitment Fraud Detection Using Tiered Large Language Models and Human-in-the-Loop Verification
 
-**Soham Jadhav**  
+**Soham Jadhav**, **Harsh Sawant**, **Aryan Talpade**, **Arham Ansari**  
 Department of Computer Engineering, University of Mumbai, Maharashtra, India  
-`soham23busy@gmail.com`
-
-**Amey Bauchkar**  
-Department of Information Technology, University of Mumbai, Maharashtra, India  
-`amey.bauchkar@gmail.com`
+`{soham23busy, harsh.sawant, aryan.talpade, arham.ansari}@gmail.com`  
+Deployment: `https://shieldintern.vercel.app`
 
 ---
 
